@@ -1,0 +1,7 @@
+Calculation method: Nelder-Mead
+Computed function: x**2+x*y+y**2-6*x-9*y
+Iterations: 74
+Number of function value calculations: 138
+Result args: [0.99997922 4.0000079 ]
+Result value: -20.99999999966979
+Execution time (seconds): 0.0023026466369628906
