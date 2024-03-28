@@ -5,38 +5,34 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 # начало работы программы (время):
 start = time.time()
 
 def grad(x, y):
     return 2*x + y - 6, x + 2*y - 9
 
-
 # основная функция:
 def f(x, y):
     return x ** 2 + x*y + y ** 2 - 6*x - 9*y
 
 
-# условие останова:
-# (1 - малое изменение значения функции)
-# (2 - малое приращение аргумента)
-type = 2
-
-
 # стартовая точка:
-x = 0.8
-y = 1
+x_start = 2
+y_start = 5
+x = x_start
+y = y_start
 
 func = f(x, y)
 new_func = func
 
-
-step = 0.005
-eps = 0.00001
+learning_rate = 0.5
+eps = 0.001
 
 # счетчик количества итераций цикла:
 it = 0
+
+# счетчик количества вызовов функции
+count_function_runs = 1
 
 # массивы, содержащие координаты точек, по которым проходим во время цикла
 # для дальнейшего построения точек на графике:
@@ -48,46 +44,49 @@ while True:
 
     X_graph.append(x)
     Y_graph.append(y)
-    Z_graph.append(func)
+    Z_graph.append(new_func)
 
     delta_f = new_func - func
     grad_x, grad_y = grad(x, y)
-    norma_delta_arg = math.sqrt(step * grad_x * step * grad_x + step * grad_y * step * grad_y)
+    delta_arg = math.sqrt(learning_rate * grad_x * learning_rate * grad_x + learning_rate * grad_y * learning_rate * grad_y)
 
-    if type == 2 and it != 0 and norma_delta_arg < eps:
+    if it != 0 and delta_arg < eps:
         break
 
     func = new_func
 
-    x = x - step * grad_x
-    y = y - step * grad_y
+    x = x - learning_rate * grad_x
+    y = y - learning_rate * grad_y
 
     new_func = f(x, y)
 
     it += 1
+    count_function_runs += 1
+
+
 
 # конец работы программы (время):
 end = time.time()
 
-print(f'a_k: {step}, eps: {eps}\n')
-print(f'x: {x}, y: {y}\nf: {func}, iterations: {it}\nwork time: {(end-start) * 10**3} ms\n')
-print(f'delta_f: {delta_f}\nnorma_delta_argument: {norma_delta_arg}')
-
+print(f'function: x ** 2 + x*y + y ** 2 - 6*x - 9*y')
+print(f'start points: x = {x_start}, y = {y_start}')
+print(f'learning_rate: {learning_rate}, eps: {eps}\n')
+print(f'x: {x}, y: {y}\nf: {func}, iterations: {it}\nwork time: {(end-start) * 10**3} ms')
+print(f'count_function_runs: {count_function_runs}\n')
 
 
 fig = plt.figure(figsize=(10, 10))
 fig.set_figheight(5)
 
 # построение точек на графике
-# (точка C(1;0.5) - красного цвета
-# точки, полученные во время работы программы - синего):
 ax = fig.add_subplot(111, projection='3d')
-ax.scatter(X_graph, Y_graph, Z_graph)
-ax.scatter(1, 0.5, 0.25, c=["red"])
+plt.plot(X_graph, Y_graph, Z_graph, 'r')
+plt.plot(X_graph, Y_graph, Z_graph, 'bo')
+
 
 # построение поверхности функции:
-x = np.arange(-4, 6, 0.05)
-y = np.arange(-1, 9, 0.05)
+x = np.arange(-1, 5, 0.5)
+y = np.arange(-1, 5, 0.5)
 X, Y = np.meshgrid(x, y)
 z = np.array(f(np.ravel(X), np.ravel(Y)))
 Z = z.reshape(X.shape)
@@ -102,19 +101,19 @@ ax.set_zlabel('Z')
 # (для просмотра следующего окна нужно закрыть текущее)
 plt.show()
 
-# построение линий уровня функции в окрестности точки C:
-x = np.arange(-4, 6, 0.8)
-y = np.arange(-1, 9, 0.8)
+# построение линий уровня функции в окрестности точки минимума:
+x = np.arange(-1, 5, 0.5)
+y = np.arange(-1, 5, 0.5)
 X, Y = np.meshgrid(x, y)
 z = np.array(f(np.ravel(X), np.ravel(Y)))
 Z = z.reshape(X.shape)
 
-# cs = plt.contour(X, Y, Z, levels=50)
 cs = plt.contour(X, Y, Z, levels=50)
 plt.clabel(cs)
-plt.plot(X_graph, Y_graph, 'ro')
+plt.plot(X_graph, Y_graph, 'r')
+plt.plot(X_graph, Y_graph, 'bo')
 
-# вывод линий уровня функции в окрестности точки C:
+# вывод линий уровня функции в окрестности точки минимума:
 # (для просмотра этого окна нужно закрыть предыдущее)
 plt.show()
 
